@@ -10,7 +10,7 @@ function Inicio() {
 <h3>Revisar Compatibilidad</h3>
 <h3>Consultar Rendimiento</h3>
 <h3>Solicitar Cotización</h3>
-
+<p>ola</p>
 <h2>Sobre buildmypc</h2>
 <p>BuildMyPC es una plataforma que permite crear configuraciones de computadores utilizando diferentes componentes de hardware.
 
