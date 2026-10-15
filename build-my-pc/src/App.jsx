@@ -12,7 +12,7 @@ const secciones = [
 function App() {
  return (
  <main>
-  <Inicio />
+  <Inicio/>
 
  <h1>Hola, React</h1>
  <p>Mi primera aplicacion.</p>
