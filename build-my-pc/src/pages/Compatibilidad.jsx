@@ -51,6 +51,52 @@ export default function Compatibilidad({ build, setPaginaActual }) {
             <strong>{fuente ? `${fuente.marca} ${fuente.modelo}` : 'Sin seleccionar'}</strong>
           </div>
         </article>
+
+        {/* TARJETA 2: COMPROBACIONES TÉCNICAS */}
+        <article className="tarjeta">
+          <h2>Comprobaciones</h2>
+
+          {/* Socket */}
+          <div className="regla-compatibilidad">
+            <div>
+              <h4>CPU y Placa Madre</h4>
+              <p>
+                {!cpu || !placa
+                  ? 'Esperando selección de CPU y Placa...'
+                  : cpu.socket === placa.socket
+                  ? `Ambos utilizan socket ${cpu.socket}.`
+                  : `Incompatible: CPU ${cpu.socket} vs Placa ${placa.socket}`}
+              </p>
+            </div>
+            <strong
+              style={{
+                color: !cpu || !placa ? 'var(--texto-suave)' : cpu.socket === placa.socket ? 'var(--primario)' : 'var(--error)'
+              }}>
+              {!cpu || !placa ? 'Pendiente' : cpu.socket === placa.socket ? 'Compatible' : 'No compatible'}
+            </strong>
+          </div>
+
+          {/* RAM */}
+          <div className="regla-compatibilidad">
+            <div>
+              <h4>RAM y Placa Madre</h4>
+              <p>
+                {!ram || !placa
+                  ? 'Esperando selección de RAM y Placa...'
+                  : placa.tiposMemoriaSoportados?.includes(ram.tipoMemoria)
+                  ? `La placa soporta memorias ${ram.tipoMemoria}.`
+                  : `Incompatible: Placa no soporta ${ram.tipoMemoria}`}
+              </p>
+            </div>
+            <strong
+              style={{
+                color: !ram || !placa ? 'var(--texto-suave)' : placa.tiposMemoriaSoportados?.includes(ram.tipoMemoria) ? 'var(--primario)' : 'var(--error)'
+              }}
+            >
+              {!ram || !placa ? 'Pendiente' : placa.tiposMemoriaSoportados?.includes(ram.tipoMemoria) ? 'Compatible' : 'No compatible'}
+            </strong>
+          </div>
+        </article>
       </section>
     </main>
   )
