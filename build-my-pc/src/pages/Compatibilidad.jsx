@@ -170,7 +170,30 @@ export default function Compatibilidad({ build, setPaginaActual }) {
             )}
           </div>
 
-          
+          <div className="acciones-compatibilidad">
+            <button
+              type="button"
+              className="boton-secundario"
+              onClick={() => setPaginaActual('builds')}
+            >
+              Modificar Build
+            </button>
+
+            <button
+              type="button"
+              className="boton-primario"
+              disabled={!evaluacion.completa || !evaluacion.compatible}
+              onClick={() => setPaginaActual('cotizacion')}
+              title={
+                !evaluacion.completa
+                  ? 'Completa la build para cotizar'
+                  : !evaluacion.compatible
+                  ? 'Corrige las incompatibilidades para cotizar'
+                  : 'Ir a Cotización'
+              }>
+              Solicitar Cotización
+            </button>
+          </div>
         </article>
       </section>
     </main>
