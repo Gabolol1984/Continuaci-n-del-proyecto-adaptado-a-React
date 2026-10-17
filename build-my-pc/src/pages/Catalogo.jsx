@@ -23,6 +23,7 @@ export default function Catalogo({ onAgregarComponente, onVerDetalle }) {
     }
 
     const termino = textoBusqueda.trim().toLowerCase();
+
     return inventarioComponentes.filter((prod) => {
       const coincideTexto = (prod.marca + ' ' + prod.modelo + ' ' + prod.descripcion)
         .toLowerCase()
@@ -33,8 +34,6 @@ export default function Catalogo({ onAgregarComponente, onVerDetalle }) {
       return coincideTexto && coincideTipo && coincidePrecio;
     });
   }, [textoBusqueda, categoriaSeleccionada, precioMin, precioMax]);
-
-
 
   return (
     <main className="contenedor">
@@ -79,10 +78,83 @@ export default function Catalogo({ onAgregarComponente, onVerDetalle }) {
                 <option value="Fuente">Fuentes de Poder</option>
               </select>
             </div>
+
+            {/* Rango de Precio Mínimo */}
+            <div style={{ flex: '1 1 130px' }} className="campo-form">
+              <label htmlFor="precio-min">Precio mín ($):</label>
+              <input
+                type="number"
+                id="precio-min"
+                min="0"
+                value={precioMin}
+                onChange={(e) => setPrecioMin(e.target.value)}
+                placeholder="0"
+              />
+            </div>
+
+            {/* Rango de Precio Máximo */}
+            <div style={{ flex: '1 1 130px' }} className="campo-form">
+              <label htmlFor="precio-max">Precio máx ($):</label>
+              <input
+                type="number"
+                id="precio-max"
+                min="0"
+                value={precioMax}
+                onChange={(e) => setPrecioMax(e.target.value)}
+                placeholder="9999999"
+              />
+            </div>
+
+            {/* Botón para resetear filtros */}
+            {(textoBusqueda || categoriaSeleccionada !== 'todos' || precioMin || precioMax) && (
+              <div style={{ marginBottom: '16px' }}>
+                <button
+                  type="button"
+                  className="btn-plantilla"
+                  onClick={() => {
+                    setTextoBusqueda('');
+                    setCategoriaSeleccionada('todos');
+                    setPrecioMin('');
+                    setPrecioMax('');
+                    setErrorFiltro('');
+                  }}
+                >
+                  Limpiar Filtros
+                </button>
+              </div>
+            )}
           </div>
-         </form>
+
+          {/* Mensaje de validación de precios */}
+          {errorFiltro && (
+            <div className="mensaje-error" style={{ marginTop: '12px' }}>
+              ⚠️ {errorFiltro}
+            </div>
+          )}
+        </form>
       </section>
-      
+
+      {/* GRILLA DE PRODUCTOS */}
+      <section style={{ marginTop: '36px' }}>
+        {componentesFiltrados.length === 0 ? (
+          <div className="panel" style={{ textAlign: 'center', padding: '40px 20px' }}>
+            <p style={{ color: 'var(--texto-suave)', fontSize: '1.1rem' }}>
+              No se encontraron componentes con los filtros aplicados.
+            </p>
+          </div>
+        ) : (
+          <div className="rejilla">
+            {componentesFiltrados.map((producto) => (
+              <ProductCard
+                key={producto.id}
+                producto={producto}
+                onSeleccionar={onAgregarComponente}
+                onVerDetalle={onVerDetalle}
+              />
+            ))}
+          </div>
+        )}
+      </section>
     </main>
-    
-  );}
+  );
+}
