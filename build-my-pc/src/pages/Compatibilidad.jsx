@@ -96,6 +96,81 @@ export default function Compatibilidad({ build, setPaginaActual }) {
               {!ram || !placa ? 'Pendiente' : placa.tiposMemoriaSoportados?.includes(ram.tipoMemoria) ? 'Compatible' : 'No compatible'}
             </strong>
           </div>
+
+          {/* Fuente */}
+          <div className="regla-compatibilidad">
+            <div>
+              <h4>Consumo y Fuente de Poder</h4>
+              <p>
+                {!fuente || !evaluacion.completa
+                  ? 'Esperando componentes para calcular consumo...'
+                  : fuente.potenciaWatts >= evaluacion.wattsMargen
+                  ? `Fuente de ${fuente.potenciaWatts} W suficiente para los ${evaluacion.wattsMargen} W recomendados.`
+                  : `Insuficiente: Fuente entrega ${fuente.potenciaWatts} W y se requieren ${evaluacion.wattsMargen} W`}
+              </p>
+            </div>
+            <strong
+              style={{
+                color: !fuente || !evaluacion.completa ? 'var(--texto-suave)' : fuente.potenciaWatts >= evaluacion.wattsMargen ? 'var(--primario)' : 'var(--error)'
+              }}
+            >
+              {!fuente || !evaluacion.completa ? 'Pendiente' : fuente.potenciaWatts >= evaluacion.wattsMargen ? 'Compatible' : 'No compatible'}
+            </strong>
+          </div>
+        </article>
+
+        {/* TARJETA 3: CONSUMO ESTIMADO */}
+        <article className="tarjeta">
+          <h2>Consumo estimado</h2>
+
+          <div className="dato-consumo">
+            <span>Consumo base componentes:</span>
+            <strong>{evaluacion.wattsBase} W</strong>
+          </div>
+
+          <div className="dato-consumo">
+            <span>Consumo recomendado (+20% margen):</span>
+            <strong style={{ color: 'var(--acento)' }}>{evaluacion.wattsMargen} W</strong>
+          </div>
+
+          <div className="dato-consumo">
+            <span>Potencia de la fuente elegida:</span>
+            <strong style={{ color: 'var(--primario)' }}>
+              {fuente ? `${fuente.potenciaWatts} W` : '0 W'}
+            </strong>
+          </div>
+        </article>
+
+        {/* TARJETA 4: RESULTADO FINAL */}
+        <article className="tarjeta">
+          <h2>Resultado</h2>
+
+          <div style={{ margin: '14px 0' }}>
+            {!evaluacion.completa ? (
+              <>
+                <h3 style={{ color: 'var(--alerta)' }}>⚠️ Build sin comprobar</h3>
+                <p style={{ color: 'var(--texto-suave)' }}>
+                  Primero debes seleccionar los 5 componentes esenciales en el armador para comprobar su compatibilidad.
+                </p>
+              </>
+            ) : evaluacion.compatible ? (
+              <>
+                <h3 style={{ color: 'var(--primario)' }}>✓ Build Compatible</h3>
+                <p style={{ color: 'var(--texto)' }}>
+                  {evaluacion.motivo}
+                </p>
+              </>
+            ) : (
+              <>
+                <h3 style={{ color: 'var(--error)' }}>✕ Build No Compatible</h3>
+                <p style={{ color: 'var(--error)' }}>
+                  {evaluacion.motivo}
+                </p>
+              </>
+            )}
+          </div>
+
+          
         </article>
       </section>
     </main>
