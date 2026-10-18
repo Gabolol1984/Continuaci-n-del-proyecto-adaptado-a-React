@@ -42,5 +42,34 @@ export default function Cotizacion({ build, setPaginaActual }) {
       fecha: new Date().toLocaleDateString('es-CL'),
       estado: 'Solicitada'
     };
-  }
+
+    // Guardar en localStorage
+    const cotizacionesPrevias = JSON.parse(localStorage.getItem('cotizaciones')) || [];
+    cotizacionesPrevias.push(nuevaCotizacion);
+    localStorage.setItem('cotizaciones', JSON.stringify(cotizacionesPrevias));
+
+    setCotizacionGenerada(nuevaCotizacion);
+
+    // Limpiar formulario
+    setNombre('');
+    setCorreo('');
+    setTelefono('');
+    setComentario('');
+  };
+
+  return (
+    <main className="contenedor">
+      {/* SECCIÓN HERO */}
+      <section className="hero">
+        <article>
+          <h2>Cotización de tu Build</h2>
+          <p>
+            Revisa los componentes de tu configuración y solicita una cotización estimada para tu computador.
+          </p>
+        </article>
+      </section>
+
+      
+    </main>
+  );
 }
