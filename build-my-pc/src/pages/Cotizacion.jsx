@@ -13,4 +13,34 @@ export default function Cotizacion({ build, setPaginaActual }) {
     return evaluarCompatibilidadBuild(build.cpu, build.placa, build.ram, build.gpu, build.fuente);
   }, [build]);
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (!nombre.trim() || !correo.trim()) {
+      setMensajeError('Debes ingresar tu nombre y correo electrónico obligatoriamente.');
+      return;
+    }
+
+    setMensajeError('');
+
+    const nuevaCotizacion = {
+      id: Date.now(),
+      cliente: {
+        nombre: nombre.trim(),
+        correo: correo.trim(),
+        telefono: telefono.trim()
+      },
+      comentario: comentario.trim(),
+      build: {
+        cpu: build.cpu,
+        placa: build.placa,
+        ram: build.ram,
+        gpu: build.gpu,
+        fuente: build.fuente,
+        total: evaluacion.total
+      },
+      fecha: new Date().toLocaleDateString('es-CL'),
+      estado: 'Solicitada'
+    };
+  }
 }
