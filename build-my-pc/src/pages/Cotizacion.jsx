@@ -68,6 +68,7 @@ export default function Cotizacion({ build, setPaginaActual }) {
           </p>
         </article>
       </section>
+      
       {!evaluacion.completa ? (
         <section className="panel" style={{ textAlign: 'center', padding: '40px 20px' }}>
           <h3 style={{ color: 'var(--alerta)', marginBottom: '12px' }}>
