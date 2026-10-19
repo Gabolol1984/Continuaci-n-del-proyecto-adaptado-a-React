@@ -1,5 +1,6 @@
 import React from 'react';
 
+
 export default function Navbar({ paginaActual, setPaginaActual }) {
   const enlaces = [
     { id: 'inicio', label: 'Inicio' },
