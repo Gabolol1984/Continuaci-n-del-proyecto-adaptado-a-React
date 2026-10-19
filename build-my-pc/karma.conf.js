@@ -1,68 +1,62 @@
-// Karma configuration
-// Generated on Sun Oct 18 2026 21:27:18 GMT-0300 (hora de verano de Chile)
+import karmaJasmine from 'karma-jasmine';
+import karmaChromeLauncher from 'karma-chrome-launcher';
+import karmaWebpack from 'karma-webpack';
 
-module.exports = function(config) {
+export default function(config) {
   config.set({
-
-    // base path that will be used to resolve all patterns (eg. files, exclude)
     basePath: '',
 
+    plugins: [
+      karmaJasmine,
+      karmaChromeLauncher,
+      karmaWebpack
+    ],
 
-    // frameworks to use
-    // available frameworks: https://www.npmjs.com/search?q=keywords:karma-adapter
-    frameworks: ['jasmine'],
+    frameworks: ['jasmine', 'webpack'],
 
-
-    // list of files / patterns to load in the browser
+    // Buscamos tus archivos de pruebas directamente
     files: [
+      'src/demo.spec.js',
+      'src/**/*.spec.jsx'
     ],
 
+    exclude: [],
 
-    // list of files / patterns to exclude
-    exclude: [
-    ],
-
-
-    // preprocess matching files before serving them to the browser
-    // available preprocessors: https://www.npmjs.com/search?q=keywords:karma-preprocessor
+    // Le asignamos el procesamiento a Webpack
     preprocessors: {
+      'src/demo.spec.js': ['webpack'],
+      'src/**/*.spec.jsx': ['webpack']
     },
 
+    // Configuración interna de Webpack para entender React (.jsx)
+    webpack: {
+      mode: 'development',
+      module: {
+        rules: [
+          {
+            test: /\.(js|jsx)$/,
+            exclude: /node_modules/,
+            use: {
+              loader: 'babel-loader',
+              options: {
+                presets: ['@babel/preset-env', '@babel/preset-react']
+              }
+            }
+          }
+        ]
+      },
+      resolve: {
+        extensions: ['.js', '.jsx']
+      }
+    },
 
-    // test results reporter to use
-    // possible values: 'dots', 'progress'
-    // available reporters: https://www.npmjs.com/search?q=keywords:karma-reporter
     reporters: ['progress'],
-
-
-    // web server port
     port: 9876,
-
-
-    // enable / disable colors in the output (reporters and logs)
     colors: true,
-
-
-    // level of logging
-    // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
     logLevel: config.LOG_INFO,
-
-
-    // enable / disable watching file and executing tests whenever any file changes
     autoWatch: true,
-
-
-    // start these browsers
-    // available browser launchers: https://www.npmjs.com/search?q=keywords:karma-launcher
     browsers: ['Chrome'],
-
-
-    // Continuous Integration mode
-    // if true, Karma captures browsers, runs the tests and exits
     singleRun: false,
-
-    // Concurrency level
-    // how many browser instances should be started simultaneously
     concurrency: Infinity
   })
 }
