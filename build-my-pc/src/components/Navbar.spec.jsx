@@ -1,26 +1,24 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import Navbar from './Navbar.jsx'; // Asegúrate de ajustar la ruta real a tu componente
-
+import Navbar from './Navbar.jsx';
 
 describe('Componente <Navbar />', () => {
   
-  // Test 1: Verificar que el Navbar se dibuja en la pantalla
+  // Creamos una función simulada para que el componente no falle al hacer clic
+  const mockSetPaginaActual = () => {};
+
   it('debería renderizarse correctamente en el documento', () => {
-    render(<Navbar />);
+    render(<Navbar paginaActual="inicio" setPaginaActual={mockSetPaginaActual} />);
     
-    // Cambia 'Inicio' por algún texto descriptivo o enlace que tenga tu Navbar real
     const elementoNavbar = screen.getByText(/Inicio/i); 
     expect(elementoNavbar).toBeTruthy(); 
   });
 
-  // Test 2: Verificar si un botón o enlace específico existe
-  it('debería contener el enlace al catálogo', () => {
-    render(<Navbar />);
-    
-    // Cambia 'Catalogo' por el texto exacto que tenga tu botón/enlace
-    const botonCatalogo = screen.getByRole('link', { name: /Catalogo/i });
-    expect(botonCatalogo).toBeTruthy();
-  });
+  it('debería contener el botón al catálogo', () => {
+  render(<Navbar paginaActual="inicio" setPaginaActual={mockSetPaginaActual} />);
+
+  const botonCatalogo = screen.getByRole('button', { name: /Catálogo/i });
+  expect(botonCatalogo).toBeTruthy();
+});
   
 });
