@@ -1,8 +1,37 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { obtenerCPUs } from '../services/cpuService';
 import { inventarioComponentes } from '../data/componentes';
 import ProductCard from '../components/ProductCard';
 
 export default function Catalogo({ onAgregarComponente, onVerDetalle }) {
+
+  ////Agregamos estados usestate, cargando, error y setcpuBACKEND
+  const [cpusBackend, setCpusBackend] = useState([]);
+  const [cargando, setCargando] = useState(true);
+  const [errorAPI, setErrorAPI] = useState('');
+
+  useEffect(() => {
+    const cargarCPUs = async () => {
+      try {
+        setCargando(true);
+        setErrorAPI('');
+
+        const datos = await obtenerCPUs();
+
+        console.log('Respuesta de Spring Boot:', datos);
+
+        setCpusBackend(datos);
+      } catch (error) {
+        console.error('Error al obtener CPUs:', error);
+        setErrorAPI(error.message);
+      } finally {
+        setCargando(false);
+      }
+    };
+
+    cargarCPUs();
+  }, []);
+  ////////////////////////////////////////
   const [textoBusqueda, setTextoBusqueda] = useState('');
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState('todos');
   const [precioMin, setPrecioMin] = useState('');
