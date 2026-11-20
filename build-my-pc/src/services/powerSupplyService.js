@@ -3,17 +3,17 @@ import { apiRequest } from './api';
 
 // Obtener todas las fuentes de poder
 export const obtenerFuentesPoder = () => {
-    return apiRequest('/api/powerSupply');
+    return apiRequest('/api/api/v2/psus');
 };
 
 // Obtener una fuente de poder por ID
 export const obtenerFuentePoder = (id) => {
-    return apiRequest(`/api/powerSupply/${id}`);
+    return apiRequest(`/api/v2/psus/${id}`);
 };
 
 // Crear una fuente de poder
 export const crearFuentePoder = (fuente) => {
-    return apiRequest('/api/powerSupply', {
+    return apiRequest('/api/v2/psus', {
         method: 'POST',
         body: JSON.stringify(fuente)
     });

@@ -10,6 +10,7 @@ export default function Catalogo({ onAgregarComponente, onVerDetalle }) {
   const [cargando, setCargando] = useState(true);
   const [errorAPI, setErrorAPI] = useState('');
 
+
   useEffect(() => {
     const cargarCPUs = async () => {
       try {

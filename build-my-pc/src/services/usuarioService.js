@@ -6,17 +6,17 @@ import { apiRequest } from './api';
 
 // Obtener todos los usuarios
 export const obtenerUsuarios = () => {
-    return apiRequest('/api/usuarios');
+    return apiRequest('/api/v1/usuarios');
 };
 
 // Obtener un usuario por ID
 export const obtenerUsuario = (id) => {
-    return apiRequest(`/api/usuarios/${id}`);
+    return apiRequest(`/api/v1/usuarios/${id}`);
 };
 
 // Crear un usuario
 export const crearUsuario = (usuario) => {
-    return apiRequest('/api/usuarios', {
+    return apiRequest('/api/v1/usuarios', {
         method: 'POST',
         body: JSON.stringify(usuario)
     });

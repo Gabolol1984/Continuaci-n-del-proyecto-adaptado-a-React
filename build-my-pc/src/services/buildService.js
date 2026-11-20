@@ -1,9 +1,9 @@
 import { apiRequest } from './api';
 
 export const obtenerBuilds = () => {
-    return apiRequest('/api/build');
+    return apiRequest('/api/v2/builds');
 };
 
 export const obtenerBuild = (id) => {
-    return apiRequest(`/api/build/${id}`);
+    return apiRequest(`/api/v2/builds/${id}`);
 };

@@ -1,9 +1,9 @@
 import { apiRequest } from './api';
 
 export const obtenerRAMs = () => {
-    return apiRequest('/api/ram');
+    return apiRequest('/api/v2/ram');
 };
 
 export const obtenerRAM = (id) => {
-    return apiRequest(`/api/ram/${id}`);
+    return apiRequest(`/api/v2/ram/${id}`);
 };
