@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import FloatingButton from './components/FloatingButton';
+import AuthModal from './components/AuthModal';
 
 import Inicio from './pages/Inicio';
 import Catalogo from './pages/Catalogo';
@@ -10,10 +11,33 @@ import Compatibilidad from './pages/Compatibilidad';
 import Cotizacion from './pages/Cotizacion';
 import DetalleProducto from './pages/DetalleProducto';
 import Mantencion from './pages/Mantencion';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
 
 export default function App() {
-  const [paginaActual, setPaginaActual] = useState('inicio');
+  const [paginaActual, setPaginaActual] = useState(() => {
+    const path = window.location.pathname.replace(/^\//, '');
+    if (path === 'login' || path === 'register') {
+      return path;
+    }
+    return 'inicio';
+  });
   const [productoDetalleId, setProductoDetalleId] = useState('ram-001');
+
+  // Sincronizar cambios en el historial del navegador (back/forward)
+  useEffect(() => {
+    const handlePopState = () => {
+      const path = window.location.pathname.replace(/^\//, '');
+      if (['login', 'register', 'catalogo', 'builds', 'compatibilidad', 'cotizacion', 'mantencion'].includes(path)) {
+        setPaginaActual(path);
+      } else {
+        setPaginaActual('inicio');
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   // Estado de la Build sincronizado con localStorage
   const [build, setBuild] = useState(() => {
@@ -127,9 +151,20 @@ export default function App() {
         <Mantencion setPaginaActual={setPaginaActual} />
       )}
 
+      {paginaActual === 'login' && (
+        <LoginPage setPaginaActual={setPaginaActual} />
+      )}
+
+      {paginaActual === 'register' && (
+        <RegisterPage setPaginaActual={setPaginaActual} />
+      )}
+
       <Footer setPaginaActual={setPaginaActual} />
 
       <FloatingButton onClick={() => setPaginaActual('mantencion')} />
+
+      {/* Modal global de autenticación */}
+      <AuthModal />
     </>
   );
 }
