@@ -13,11 +13,12 @@ import DetalleProducto from './pages/DetalleProducto';
 import Mantencion from './pages/Mantencion';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import AdminUsuarios from './pages/AdminUsuarios';
 
 export default function App() {
   const [paginaActual, setPaginaActual] = useState(() => {
     const path = window.location.pathname.replace(/^\//, '');
-    if (path === 'login' || path === 'register') {
+    if (path === 'login' || path === 'register' || path === 'admin') {
       return path;
     }
     return 'inicio';
@@ -28,7 +29,7 @@ export default function App() {
   useEffect(() => {
     const handlePopState = () => {
       const path = window.location.pathname.replace(/^\//, '');
-      if (['login', 'register', 'catalogo', 'builds', 'compatibilidad', 'cotizacion', 'mantencion'].includes(path)) {
+      if (['login', 'register', 'catalogo', 'builds', 'compatibilidad', 'cotizacion', 'mantencion', 'admin'].includes(path)) {
         setPaginaActual(path);
       } else {
         setPaginaActual('inicio');
@@ -103,68 +104,70 @@ export default function App() {
   };
 
   return (
-    <>
-      <Navbar paginaActual={paginaActual} setPaginaActual={setPaginaActual} />
+      <>
+        <Navbar paginaActual={paginaActual} setPaginaActual={setPaginaActual} />
 
-      {paginaActual === 'inicio' && (
-        <Inicio setPaginaActual={setPaginaActual} />
-      )}
+        {paginaActual === 'inicio' && (
+            <Inicio setPaginaActual={setPaginaActual} />
+        )}
 
-      {paginaActual === 'catalogo' && (
-        <Catalogo
-          onAgregarComponente={manejarAgregarComponente}
-          onVerDetalle={manejarVerDetalle}
-        />
-      )}
+        {paginaActual === 'catalogo' && (
+            <Catalogo
+                onAgregarComponente={manejarAgregarComponente}
+                onVerDetalle={manejarVerDetalle}
+            />
+        )}
 
-      {paginaActual === 'builds' && (
-        <ArmadorBuild
-          build={build}
-          setBuild={setBuild}
-          setPaginaActual={setPaginaActual}
-        />
-      )}
+        {paginaActual === 'builds' && (
+            <ArmadorBuild
+                build={build}
+                setBuild={setBuild}
+                setPaginaActual={setPaginaActual}
+            />
+        )}
 
-      {paginaActual === 'compatibilidad' && (
-        <Compatibilidad
-          build={build}
-          setPaginaActual={setPaginaActual}
-        />
-      )}
+        {paginaActual === 'compatibilidad' && (
+            <Compatibilidad
+                build={build}
+                setPaginaActual={setPaginaActual}
+            />
+        )}
 
-      {paginaActual === 'cotizacion' && (
-        <Cotizacion
-          build={build}
-          setPaginaActual={setPaginaActual}
-        />
-      )}
+        {paginaActual === 'cotizacion' && (
+            <Cotizacion
+                build={build}
+                setPaginaActual={setPaginaActual}
+            />
+        )}
 
-      {paginaActual === 'detalle' && (
-        <DetalleProducto
-          productoId={productoDetalleId}
-          onVolver={() => setPaginaActual('catalogo')}
-          onAgregarABuild={manejarAgregarComponente}
-        />
-      )}
+        {paginaActual === 'detalle' && (
+            <DetalleProducto
+                productoId={productoDetalleId}
+                onVolver={() => setPaginaActual('catalogo')}
+                onAgregarABuild={manejarAgregarComponente}
+            />
+        )}
 
-      {paginaActual === 'mantencion' && (
-        <Mantencion setPaginaActual={setPaginaActual} />
-      )}
+        {paginaActual === 'mantencion' && (
+            <Mantencion setPaginaActual={setPaginaActual} />
+        )}
 
-      {paginaActual === 'login' && (
-        <LoginPage setPaginaActual={setPaginaActual} />
-      )}
+        {paginaActual === 'login' && (
+            <LoginPage setPaginaActual={setPaginaActual} />
+        )}
 
-      {paginaActual === 'register' && (
-        <RegisterPage setPaginaActual={setPaginaActual} />
-      )}
+        {paginaActual === 'register' && (
+            <RegisterPage setPaginaActual={setPaginaActual} />
+        )}
 
-      <Footer setPaginaActual={setPaginaActual} />
+        {paginaActual === 'admin' && <AdminUsuarios />}
 
-      <FloatingButton onClick={() => setPaginaActual('mantencion')} />
+        <Footer setPaginaActual={setPaginaActual} />
 
-      {/* Modal global de autenticación */}
-      <AuthModal />
-    </>
+        <FloatingButton onClick={() => setPaginaActual('mantencion')} />
+
+        {/* Modal global de autenticación */}
+        <AuthModal />
+      </>
   );
 }

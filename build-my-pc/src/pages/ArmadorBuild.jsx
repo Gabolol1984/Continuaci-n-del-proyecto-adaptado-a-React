@@ -1,10 +1,66 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
+import { obtenerCPUs } from '../services/cpuService';
 import { inventarioComponentes, formatearCLP, evaluarCompatibilidadBuild } from '../data/componentes';
 
 export default function ArmadorBuild({ build, setBuild, setPaginaActual }) {
+
+  //agregousseffect
+  const [cpusBackend, setCpusBackend] = useState([]);
+  const [cargando, setCargando] = useState(true);
+  const [errorAPI, setErrorAPI] = useState('');
+
+  useEffect(() => {
+
+    const cargarCPUs = async () => {
+      try {
+        setCargando(true);
+        setErrorAPI('');
+
+        const datos = await obtenerCPUs();
+
+        console.log('CPUs recibidas en ArmadorBuild:', datos);
+
+        // Extraer los elementos de la respuesta HATEOAS
+        const coleccion = Array.isArray(datos)
+            ? datos
+            : Object.values(datos?._embedded || {})
+            .find(valor => Array.isArray(valor)) || [];
+
+        // Adaptar los datos al formato que utiliza el armador
+        const cpusAdaptadas = coleccion.map(cpu => ({
+          id: cpu.id,
+          componenteId: cpu.componenteId,
+          marca: 'Procesador',
+          modelo: cpu.cpuName,
+          tipo: 'CPU',
+          precio: Number(cpu.precio),
+          socket: cpu.socket,
+          tdp: cpu.tdpWatts,
+          nucleos: cpu.nucleos,
+          hilos: cpu.hilos,
+          descontinuado: false
+        }));
+
+        setCpusBackend(cpusAdaptadas);
+
+      } catch (error) {
+        console.error('Error al cargar CPUs:', error);
+        setErrorAPI(error.message);
+
+      } finally {
+        setCargando(false);
+      }
+    };
+
+    cargarCPUs();
+
+  }, []);
+
+
   // Filtrar componentes no descontinuados para cada selector
-  const cpus = useMemo(() => inventarioComponentes.filter(c => c.tipo === 'CPU' && !c.descontinuado), []);
-  const placas = useMemo(() => inventarioComponentes.filter(c => c.tipo === 'Placa' && !c.descontinuado), []);
+  const cpus = useMemo(() => {
+    return cpusBackend.filter(c => !c.descontinuado);
+  }, [cpusBackend]);  const placas = useMemo(() => inventarioComponentes.filter(c => c.tipo === 'Placa' && !c.descontinuado), []);
   const rams = useMemo(() => inventarioComponentes.filter(c => c.tipo === 'RAM' && !c.descontinuado), []);
   const gpus = useMemo(() => inventarioComponentes.filter(c => c.tipo === 'GPU' && !c.descontinuado), []);
   const fuentes = useMemo(() => inventarioComponentes.filter(c => c.tipo === 'Fuente' && !c.descontinuado), []);
@@ -16,8 +72,12 @@ export default function ArmadorBuild({ build, setBuild, setPaginaActual }) {
 
   // Manejar cambio en los selectores
   const manejarCambioComponente = (tipoClave, id) => {
-    const item = inventarioComponentes.find(c => c.id === id) || null;
-    const nuevaBuild = {
+    const inventarioActual = [
+      ...inventarioComponentes.filter(c => c.tipo !== 'CPU'),
+      ...cpusBackend
+    ];
+
+    const item = inventarioActual.find(c => String(c.id) === String(id)) || null;    const nuevaBuild = {
       ...build,
       [tipoClave]: item
     };

@@ -18,17 +18,11 @@ export const crearCotizacion = (cotizacion) => {
     });
 };
 
-// Actualizar una cotización
-export const actualizarCotizacion = (id, cotizacion) => {
-    return apiRequest(`/api/cotizacion/${id}`, {
-        method: 'PUT',
-        body: JSON.stringify(cotizacion)
-    });
-};
+// Las cotizaciones cambian de estado con acciones de negocio explícitas en el backend.
+export const aprobarCotizacion = (id) => apiRequest(`/api/v1/cotizaciones/${id}/aprobar`, {
+    method: 'PATCH',
+});
 
-// Eliminar una cotización
-export const eliminarCotizacion = (id) => {
-    return apiRequest(`/api/cotizacion/${id}`, {
-        method: 'DELETE'
-    });
-};
+export const rechazarCotizacion = (id) => apiRequest(`/api/v1/cotizaciones/${id}/rechazar`, {
+    method: 'PATCH',
+});

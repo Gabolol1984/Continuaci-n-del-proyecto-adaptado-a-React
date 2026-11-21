@@ -2,6 +2,18 @@ import { AuthResponse } from './auth.service';
 
 const STORAGE_KEY = 'auth';
 
+function tokenVencido(token: string): boolean {
+  try {
+    const payload = token.split('.')[1];
+    if (!payload) return true;
+    const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+    const claims = JSON.parse(atob(base64));
+    return typeof claims.exp !== 'number' || claims.exp * 1000 <= Date.now();
+  } catch {
+    return true;
+  }
+}
+
 export function saveSession(auth: AuthResponse): void {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(auth));
@@ -14,15 +26,20 @@ export function saveSession(auth: AuthResponse): void {
 }
 
 export function getToken(): string | null {
-  const user = getUser();
-  return user?.token || localStorage.getItem('token') || null;
+  return getUser()?.token || null;
 }
 
 export function getUser(): AuthResponse | null {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
-    return JSON.parse(raw) as AuthResponse;
+    const auth = JSON.parse(raw) as AuthResponse;
+    if (!auth?.token || tokenVencido(auth.token)) {
+      clearSession();
+      window.dispatchEvent(new Event('sesion-expirada'));
+      return null;
+    }
+    return auth;
   } catch (error) {
     console.error('Error al obtener la sesión de localStorage:', error);
     return null;

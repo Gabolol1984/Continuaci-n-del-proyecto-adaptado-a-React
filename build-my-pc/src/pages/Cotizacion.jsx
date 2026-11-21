@@ -1,5 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { formatearCLP, evaluarCompatibilidadBuild } from '../data/componentes';
+import React, { useState, useMemo, useEffect } from 'react';
+import { obtenerUsuario } from '../services/usuarioService';
 
 export default function Cotizacion({ build, setPaginaActual }) {
   const [nombre, setNombre] = useState('');
@@ -8,6 +10,33 @@ export default function Cotizacion({ build, setPaginaActual }) {
   const [comentario, setComentario] = useState('');
   const [cotizacionGenerada, setCotizacionGenerada] = useState(null);
   const [mensajeError, setMensajeError] = useState('');
+  const [usuario, setUsuario] = useState(null);
+  const [cargando, setCargando] = useState(true);
+  const [errorAPI, setErrorAPI] = useState('');
+
+  useEffect(() => {
+    const cargarUsuario = async () => {
+      try {
+        setCargando(true);
+        setErrorAPI('');
+
+        const datos = await obtenerUsuario();
+
+        setUsuario(datos);
+
+        setNombre(datos.nombre || '');
+        setCorreo(datos.correo || '');
+
+      } catch (error) {
+        console.error('Error al cargar usuario:', error);
+        setErrorAPI(error.message);
+      } finally {
+        setCargando(false);
+      }
+    };
+
+    cargarUsuario();
+  }, []);
 
   const evaluacion = useMemo(() => {
     return evaluarCompatibilidadBuild(build.cpu, build.placa, build.ram, build.gpu, build.fuente);

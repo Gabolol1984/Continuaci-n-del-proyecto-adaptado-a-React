@@ -21,7 +21,7 @@ export const crearMotherboard = (motherboard) => {
 
 // Actualizar una placa madre
 export const actualizarMotherboard = (id, motherboard) => {
-    return apiRequest(`/api/motherboard/${id}`, {
+    return apiRequest(`/api/v1/motherboards/${id}`, {
         method: 'PUT',
         body: JSON.stringify(motherboard)
     });
@@ -29,7 +29,7 @@ export const actualizarMotherboard = (id, motherboard) => {
 
 // Eliminar una placa madre
 export const eliminarMotherboard = (id) => {
-    return apiRequest(`/api/motherboard/${id}`, {
+    return apiRequest(`/api/v1/motherboards/${id}`, {
         method: 'DELETE'
     });
 };

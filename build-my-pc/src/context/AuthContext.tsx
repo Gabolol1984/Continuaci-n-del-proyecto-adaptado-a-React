@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import {
   AuthResponse,
   LoginRequest,
@@ -27,8 +27,8 @@ export interface AuthContextType {
 
 const defaultAuthContext: AuthContextType = {
   user: null,
-  login: async () => ({ token: '', tokenType: 'Bearer', username: '', roles: [] }),
-  register: async () => ({ token: '', tokenType: 'Bearer', username: '', roles: [] }),
+  login: async () => ({ token: '', tokenType: 'Bearer', usuario: { username: '', roles: [] } }),
+  register: async () => ({ token: '', tokenType: 'Bearer', usuario: { username: '', roles: [] } }),
   logout: () => {},
   isModalOpen: false,
   modalTab: 'login',
@@ -43,6 +43,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [user, setUser] = useState<AuthResponse | null>(() => getUser());
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [modalTab, setModalTab] = useState<ModalTab>('login');
+
+  useEffect(() => {
+    const alExpirar = () => setUser(null);
+    window.addEventListener('sesion-expirada', alExpirar);
+    return () => window.removeEventListener('sesion-expirada', alExpirar);
+  }, []);
 
   const login = async (payload: LoginRequest): Promise<AuthResponse> => {
     const response = await loginService(payload);
@@ -73,20 +79,20 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        login,
-        register,
-        logout,
-        isModalOpen,
-        modalTab,
-        openModal,
-        closeModal,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+      <AuthContext.Provider
+          value={{
+            user,
+            login,
+            register,
+            logout,
+            isModalOpen,
+            modalTab,
+            openModal,
+            closeModal,
+          }}
+      >
+        {children}
+      </AuthContext.Provider>
   );
 };
 

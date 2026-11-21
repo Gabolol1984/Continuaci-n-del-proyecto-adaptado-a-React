@@ -1,190 +1,130 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { obtenerCPUs } from '../services/cpuService';
-import { inventarioComponentes } from '../data/componentes';
-import ProductCard from '../components/ProductCard';
+import React from 'react';
+import { useAuth } from '../context/AuthContext';
 
-export default function Catalogo({ onAgregarComponente, onVerDetalle }) {
+export default function Navbar({ paginaActual, setPaginaActual }) {
+  const { user, logout, openModal } = useAuth();
+  const roles = user?.usuario?.roles ?? [];
+  const esAdmin = roles.includes('ROLE_ADMIN');
 
-  ////Agregamos estados usestate, cargando, error y setcpuBACKEND
-  const [cpusBackend, setCpusBackend] = useState([]);
-  const [cargando, setCargando] = useState(true);
-  const [errorAPI, setErrorAPI] = useState('');
-
-
-  useEffect(() => {
-    const cargarCPUs = async () => {
-      try {
-        setCargando(true);
-        setErrorAPI('');
-
-        const datos = await obtenerCPUs();
-
-        console.log('Respuesta de Spring Boot:', datos);
-
-        setCpusBackend(datos);
-      } catch (error) {
-        console.error('Error al obtener CPUs:', error);
-        setErrorAPI(error.message);
-      } finally {
-        setCargando(false);
-      }
-    };
-
-    cargarCPUs();
-  }, []);
-  ////////////////////////////////////////
-  const [textoBusqueda, setTextoBusqueda] = useState('');
-  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState('todos');
-  const [precioMin, setPrecioMin] = useState('');
-  const [precioMax, setPrecioMax] = useState('');
-  const [errorFiltro, setErrorFiltro] = useState('');
-
-  // Validación y filtrado reactivo
-  const componentesFiltrados = useMemo(() => {
-    const min = parseFloat(precioMin) || 0;
-    const max = parseFloat(precioMax) || Infinity;
-
-    // Validación de coherencia de precios
-    if (precioMin !== '' && precioMax !== '' && min > max) {
-      setErrorFiltro('El precio mínimo no puede ser mayor al precio máximo.');
-      return [];
-    } else {
-      setErrorFiltro('');
-    }
-
-    const termino = textoBusqueda.trim().toLowerCase();
-
-    return inventarioComponentes.filter((prod) => {
-      const coincideTexto = (prod.marca + ' ' + prod.modelo + ' ' + prod.descripcion)
-        .toLowerCase()
-        .includes(termino);
-      const coincideTipo = categoriaSeleccionada === 'todos' || prod.tipo === categoriaSeleccionada;
-      const coincidePrecio = prod.precio >= min && prod.precio <= max;
-
-      return coincideTexto && coincideTipo && coincidePrecio;
-    });
-  }, [textoBusqueda, categoriaSeleccionada, precioMin, precioMax]);
+  const enlaces = [
+    { id: 'inicio', label: 'Inicio' },
+    { id: 'catalogo', label: 'Catálogo' },
+    { id: 'builds', label: 'MisBuilds' },
+    { id: 'compatibilidad', label: 'Compatibilidad' },
+    { id: 'cotizacion', label: 'Cotización' },
+  ];
+  if (esAdmin) enlaces.push({ id: 'admin', label: 'Administración' });
 
   return (
-    <main className="contenedor">
-      {/* PORTADA Y TITULAR */}
-      <section className="portada">
-        <span className="etiqueta">Catálogo de Hardware</span>
-        <h1 className="titulo-degradado">Componentes Disponibles</h1>
-        <p>Filtra y selecciona las piezas compatibles para armar tu configuración personalizada.</p>
-      </section>
+      <header>
+        <div
+            className="contenedor-header"
+            onClick={() => {
+              if (window.history.pushState) window.history.pushState({}, '', '/');
+              setPaginaActual('inicio');
+            }}
+            title="Volver a Inicio"
+        >
+          <h1>BuildMyPC</h1>
+          <p>Construye tu computador ideal</p>
+        </div>
 
-      {/* PANEL DE FILTROS EN TIEMPO REAL */}
-      <section className="panel">
-        <form onSubmit={(e) => e.preventDefault()}>
-          <div className="datos" style={{ alignItems: 'flex-end' }}>
-            {/* Buscador por texto */}
-            <div style={{ flex: '1 1 220px' }} className="campo-form">
-              <label htmlFor="buscar-texto">Buscar componente:</label>
-              <input
-                type="text"
-                id="buscar-texto"
-                value={textoBusqueda}
-                onChange={(e) => setTextoBusqueda(e.target.value)}
-                placeholder="Ej. Intel, Kingston, RTX..."
-                autoComplete="off"
-              />
-            </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', flexWrap: 'wrap' }}>
+          <nav aria-label="Navegación principal">
+            <ul>
+              {enlaces.map((enlace) => (
+                  <li key={enlace.id}>
+                    <button
+                        type="button"
+                        className={`nav-link ${paginaActual === enlace.id ? 'activo' : ''}`}
+                        onClick={() => {
+                          if (window.history.pushState) window.history.pushState({}, '', `/${enlace.id === 'inicio' ? '' : enlace.id}`);
+                          setPaginaActual(enlace.id);
+                        }}
+                    >
+                      {enlace.label}
+                    </button>
+                  </li>
+              ))}
+            </ul>
+          </nav>
 
-            {/* Filtro por tipo / categoría */}
-            <div style={{ flex: '1 1 180px' }} className="campo-form">
-              <label htmlFor="filtro-tipo">Categoría:</label>
-              <select
-                id="filtro-tipo"
-                value={categoriaSeleccionada}
-                onChange={(e) => setCategoriaSeleccionada(e.target.value)}
-              >
-                <option value="todos">Todas las categorías</option>
-                <option value="CPU">Procesadores (CPU)</option>
-                <option value="GPU">Tarjetas Gráficas (GPU)</option>
-                <option value="RAM">Memorias RAM</option>
-                <option value="Placa">Placas Madres</option>
-                <option value="Almacenamiento">Almacenamiento</option>
-                <option value="Fuente">Fuentes de Poder</option>
-              </select>
-            </div>
-
-            {/* Rango de Precio Mínimo */}
-            <div style={{ flex: '1 1 130px' }} className="campo-form">
-              <label htmlFor="precio-min">Precio mín ($):</label>
-              <input
-                type="number"
-                id="precio-min"
-                min="0"
-                value={precioMin}
-                onChange={(e) => setPrecioMin(e.target.value)}
-                placeholder="0"
-              />
-            </div>
-
-            {/* Rango de Precio Máximo */}
-            <div style={{ flex: '1 1 130px' }} className="campo-form">
-              <label htmlFor="precio-max">Precio máx ($):</label>
-              <input
-                type="number"
-                id="precio-max"
-                min="0"
-                value={precioMax}
-                onChange={(e) => setPrecioMax(e.target.value)}
-                placeholder="9999999"
-              />
-            </div>
-
-            {/* Botón para resetear filtros */}
-            {(textoBusqueda || categoriaSeleccionada !== 'todos' || precioMin || precioMax) && (
-              <div style={{ marginBottom: '16px' }}>
-                <button
-                  type="button"
-                  className="btn-plantilla"
-                  onClick={() => {
-                    setTextoBusqueda('');
-                    setCategoriaSeleccionada('todos');
-                    setPrecioMin('');
-                    setPrecioMax('');
-                    setErrorFiltro('');
-                  }}
-                >
-                  Limpiar Filtros
-                </button>
-              </div>
+          {/* Controles de Autenticación al lado derecho */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            {user ? (
+                <>
+              <span style={{ color: 'var(--texto)', fontWeight: 600, fontSize: '0.95rem' }}>
+                Hola, <strong style={{ color: 'var(--primario)' }}>{user.usuario.username}</strong>
+              </span>
+                  <button
+                      type="button"
+                      onClick={logout}
+                      style={{
+                        background: 'transparent',
+                        border: '1px solid var(--error, #ff5c5c)',
+                        color: 'var(--error, #ff5c5c)',
+                        padding: '0.45rem 0.9rem',
+                        borderRadius: 'var(--radio-borde, 8px)',
+                        cursor: 'pointer',
+                        fontWeight: 600,
+                        fontSize: '0.9rem',
+                        transition: 'all 0.2s ease',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = 'var(--error, #ff5c5c)';
+                        e.currentTarget.style.color = '#fff';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = 'transparent';
+                        e.currentTarget.style.color = 'var(--error, #ff5c5c)';
+                      }}
+                  >
+                    Cerrar sesión
+                  </button>
+                </>
+            ) : (
+                <>
+                  <button
+                      type="button"
+                      onClick={() => openModal('login')}
+                      className="nav-link"
+                      style={{
+                        border: '1px solid var(--borde, #475569)',
+                        padding: '0.45rem 0.85rem',
+                        borderRadius: 'var(--radio-borde, 8px)',
+                        fontSize: '0.9rem',
+                        cursor: 'pointer',
+                      }}
+                  >
+                    Iniciar sesión
+                  </button>
+                  <button
+                      type="button"
+                      onClick={() => openModal('register')}
+                      style={{
+                        backgroundColor: 'var(--primario, #76b900)',
+                        color: '#101410',
+                        border: 'none',
+                        padding: '0.45rem 0.9rem',
+                        borderRadius: 'var(--radio-borde, 8px)',
+                        fontWeight: 'bold',
+                        fontSize: '0.9rem',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.filter = 'brightness(1.1)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.filter = 'none';
+                      }}
+                  >
+                    Crear cuenta
+                  </button>
+                </>
             )}
           </div>
-
-          {/* Mensaje de validación de precios */}
-          {errorFiltro && (
-            <div className="mensaje-error" style={{ marginTop: '12px' }}>
-              ⚠️ {errorFiltro}
-            </div>
-          )}
-        </form>
-      </section>
-
-      {/* GRILLA DE PRODUCTOS */}
-      <section style={{ marginTop: '36px' }}>
-        {componentesFiltrados.length === 0 ? (
-          <div className="panel" style={{ textAlign: 'center', padding: '40px 20px' }}>
-            <p style={{ color: 'var(--texto-suave)', fontSize: '1.1rem' }}>
-              No se encontraron componentes con los filtros aplicados.
-            </p>
-          </div>
-        ) : (
-          <div className="rejilla">
-            {componentesFiltrados.map((producto) => (
-              <ProductCard
-                key={producto.id}
-                producto={producto}
-                onSeleccionar={onAgregarComponente}
-                onVerDetalle={onVerDetalle}
-              />
-            ))}
-          </div>
-        )}
-      </section>
-    </main>
+        </div>
+      </header>
   );
 }

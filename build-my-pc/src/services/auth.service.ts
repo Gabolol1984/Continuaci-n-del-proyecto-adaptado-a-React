@@ -1,8 +1,10 @@
 export type AuthResponse = {
   token: string;
   tokenType: string;
-  username: string;
-  roles: string[];
+  usuario: {
+    username: string;
+    roles: string[];
+  };
 };
 
 export type LoginRequest = {
@@ -13,7 +15,6 @@ export type LoginRequest = {
 export type RegisterRequest = {
   username: string;
   password: string;
-  roles?: string[];
 };
 
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
@@ -23,6 +24,7 @@ async function parseBackendError(response: Response): Promise<string> {
     const data = await response.json();
     if (typeof data === 'string') return data;
     if (data?.message) return data.message;
+    if (data?.detail) return data.detail;
     if (data?.error) return data.error;
   } catch {
     // Si no es JSON, intentar texto plano
@@ -41,20 +43,12 @@ async function parseBackendError(response: Response): Promise<string> {
 }
 
 export async function register(payload: RegisterRequest): Promise<AuthResponse> {
-  const bodyData: RegisterRequest = {
-    username: payload.username,
-    password: payload.password,
-  };
-  if (payload.roles && payload.roles.length > 0) {
-    bodyData.roles = payload.roles;
-  }
-
-  const response = await fetch(`${BASE_URL}/api/v1/auth/login/register`, {
+  const response = await fetch(`${BASE_URL}/api/v1/auth/register`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(bodyData),
+    body: JSON.stringify(payload),
   });
 
   if (!response.ok) {
@@ -66,7 +60,7 @@ export async function register(payload: RegisterRequest): Promise<AuthResponse> 
 }
 
 export async function login(payload: LoginRequest): Promise<AuthResponse> {
-  const response = await fetch(`${BASE_URL}/api/v1/auth/login/login`, {
+  const response = await fetch(`${BASE_URL}/api/v1/auth/login`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
