@@ -1,4 +1,3 @@
-import React, { useState, useMemo } from 'react';
 import { formatearCLP, evaluarCompatibilidadBuild } from '../data/componentes';
 import React, { useState, useMemo, useEffect } from 'react';
 import { obtenerUsuario } from '../services/usuarioService';

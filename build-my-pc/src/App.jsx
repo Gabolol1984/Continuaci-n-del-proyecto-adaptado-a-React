@@ -13,7 +13,7 @@ import DetalleProducto from './pages/DetalleProducto';
 import Mantencion from './pages/Mantencion';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
-import AdminUsuarios from './pages/AdminUsuarios';
+
 
 export default function App() {
   const [paginaActual, setPaginaActual] = useState(() => {

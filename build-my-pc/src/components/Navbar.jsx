@@ -1,10 +1,22 @@
+
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
 
 export default function Navbar({ paginaActual, setPaginaActual }) {
     const { user, logout, openModal } = useAuth();
-    const roles = user?.usuario?.roles ?? [];
+
+    // Obtener el usuario independientemente de cómo venga estructurado
+    const usuario = user?.usuario ?? user ?? null;
+
+    // Obtener los roles de forma segura
+    const roles = Array.isArray(usuario?.roles) ? usuario.roles : [];
     const esAdmin = roles.includes('ROLE_ADMIN');
+
+    // Obtener el nombre de usuario
+    const nombreUsuario =
+        usuario?.username ??
+        usuario?.nombreUsuario ??
+        'Usuario';
 
     const enlaces = [
         { id: 'inicio', label: 'Inicio' },
@@ -13,14 +25,19 @@ export default function Navbar({ paginaActual, setPaginaActual }) {
         { id: 'compatibilidad', label: 'Compatibilidad' },
         { id: 'cotizacion', label: 'Cotización' },
     ];
-    if (esAdmin) enlaces.push({ id: 'admin', label: 'Administración' });
+
+    if (esAdmin) {
+        enlaces.push({ id: 'admin', label: 'Administración' });
+    }
 
     return (
         <header>
             <div
                 className="contenedor-header"
                 onClick={() => {
-                    if (window.history.pushState) window.history.pushState({}, '', '/');
+                    if (window.history.pushState) {
+                        window.history.pushState({}, '', '/');
+                    }
                     setPaginaActual('inicio');
                 }}
                 title="Volver a Inicio"
@@ -29,16 +46,32 @@ export default function Navbar({ paginaActual, setPaginaActual }) {
                 <p>Construye tu computador ideal</p>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', flexWrap: 'wrap' }}>
+            <div
+                style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '1.25rem',
+                    flexWrap: 'wrap'
+                }}
+            >
                 <nav aria-label="Navegación principal">
                     <ul>
                         {enlaces.map((enlace) => (
                             <li key={enlace.id}>
                                 <button
                                     type="button"
-                                    className={`nav-link ${paginaActual === enlace.id ? 'activo' : ''}`}
+                                    className={`nav-link ${
+                                        paginaActual === enlace.id ? 'activo' : ''
+                                    }`}
                                     onClick={() => {
-                                        if (window.history.pushState) window.history.pushState({}, '', `/${enlace.id === 'inicio' ? '' : enlace.id}`);
+                                        if (window.history.pushState) {
+                                            window.history.pushState(
+                                                {},
+                                                '',
+                                                `/${enlace.id === 'inicio' ? '' : enlace.id}`
+                                            );
+                                        }
+
                                         setPaginaActual(enlace.id);
                                     }}
                                 >
@@ -49,13 +82,29 @@ export default function Navbar({ paginaActual, setPaginaActual }) {
                     </ul>
                 </nav>
 
-                {/* Controles de Autenticación al lado derecho */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    {user ? (
+                {/* Controles de autenticación */}
+                <div
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.75rem'
+                    }}
+                >
+                    {usuario ? (
                         <>
-              <span style={{ color: 'var(--texto)', fontWeight: 600, fontSize: '0.95rem' }}>
-                Hola, <strong style={{ color: 'var(--primario)' }}>{user.usuario.username}</strong>
-              </span>
+                            <span
+                                style={{
+                                    color: 'var(--texto)',
+                                    fontWeight: 600,
+                                    fontSize: '0.95rem'
+                                }}
+                            >
+                                Hola,{' '}
+                                <strong style={{ color: 'var(--primario)' }}>
+                                    {nombreUsuario}
+                                </strong>
+                            </span>
+
                             <button
                                 type="button"
                                 onClick={logout}
@@ -68,15 +117,18 @@ export default function Navbar({ paginaActual, setPaginaActual }) {
                                     cursor: 'pointer',
                                     fontWeight: 600,
                                     fontSize: '0.9rem',
-                                    transition: 'all 0.2s ease',
+                                    transition: 'all 0.2s ease'
                                 }}
                                 onMouseEnter={(e) => {
-                                    e.currentTarget.style.backgroundColor = 'var(--error, #ff5c5c)';
+                                    e.currentTarget.style.backgroundColor =
+                                        'var(--error, #ff5c5c)';
                                     e.currentTarget.style.color = '#fff';
                                 }}
                                 onMouseLeave={(e) => {
-                                    e.currentTarget.style.backgroundColor = 'transparent';
-                                    e.currentTarget.style.color = 'var(--error, #ff5c5c)';
+                                    e.currentTarget.style.backgroundColor =
+                                        'transparent';
+                                    e.currentTarget.style.color =
+                                        'var(--error, #ff5c5c)';
                                 }}
                             >
                                 Cerrar sesión
@@ -93,11 +145,12 @@ export default function Navbar({ paginaActual, setPaginaActual }) {
                                     padding: '0.45rem 0.85rem',
                                     borderRadius: 'var(--radio-borde, 8px)',
                                     fontSize: '0.9rem',
-                                    cursor: 'pointer',
+                                    cursor: 'pointer'
                                 }}
                             >
                                 Iniciar sesión
                             </button>
+
                             <button
                                 type="button"
                                 onClick={() => openModal('register')}
@@ -110,7 +163,7 @@ export default function Navbar({ paginaActual, setPaginaActual }) {
                                     fontWeight: 'bold',
                                     fontSize: '0.9rem',
                                     cursor: 'pointer',
-                                    transition: 'all 0.2s ease',
+                                    transition: 'all 0.2s ease'
                                 }}
                                 onMouseEnter={(e) => {
                                     e.currentTarget.style.filter = 'brightness(1.1)';
