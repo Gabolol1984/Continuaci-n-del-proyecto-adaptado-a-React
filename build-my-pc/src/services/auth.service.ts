@@ -1,10 +1,8 @@
 export type AuthResponse = {
   token: string;
   tokenType: string;
-  usuario: {
-    username: string;
-    roles: string[];
-  };
+  username: string;
+  roles: string[];
 };
 
 export type LoginRequest = {

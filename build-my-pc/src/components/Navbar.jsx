@@ -5,18 +5,12 @@ import { useAuth } from '../context/AuthContext';
 export default function Navbar({ paginaActual, setPaginaActual }) {
     const { user, logout, openModal } = useAuth();
 
-    // Obtener el usuario independientemente de cómo venga estructurado
-    const usuario = user?.usuario ?? user ?? null;
-
     // Obtener los roles de forma segura
-    const roles = Array.isArray(usuario?.roles) ? usuario.roles : [];
+    const roles = Array.isArray(user?.roles) ? user.roles : [];
     const esAdmin = roles.includes('ROLE_ADMIN');
 
     // Obtener el nombre de usuario
-    const nombreUsuario =
-        usuario?.username ??
-        usuario?.nombreUsuario ??
-        'Usuario';
+    const nombreUsuario = user?.username ?? 'Usuario';
 
     const enlaces = [
         { id: 'inicio', label: 'Inicio' },
@@ -90,7 +84,7 @@ export default function Navbar({ paginaActual, setPaginaActual }) {
                         gap: '0.75rem'
                     }}
                 >
-                    {usuario ? (
+                    {user ? (
                         <>
                             <span
                                 style={{

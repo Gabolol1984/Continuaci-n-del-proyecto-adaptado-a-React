@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 
 export default function Navbar({ paginaActual, setPaginaActual }) {
   const { user, logout, openModal } = useAuth();
-  const roles = user?.usuario?.roles ?? [];
+  const roles = user?.roles ?? [];
   const esAdmin = roles.includes('ROLE_ADMIN');
 
   const enlaces = [
@@ -54,7 +54,7 @@ export default function Navbar({ paginaActual, setPaginaActual }) {
             {user ? (
                 <>
               <span style={{ color: 'var(--texto)', fontWeight: 600, fontSize: '0.95rem' }}>
-                Hola, <strong style={{ color: 'var(--primario)' }}>{user.usuario.username}</strong>
+                Hola, <strong style={{ color: 'var(--primario)' }}>{user.username}</strong>
               </span>
                   <button
                       type="button"
