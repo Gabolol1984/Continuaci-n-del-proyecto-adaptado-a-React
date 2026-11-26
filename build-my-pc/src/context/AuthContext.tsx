@@ -27,8 +27,8 @@ export interface AuthContextType {
 
 const defaultAuthContext: AuthContextType = {
   user: null,
-  login: async () => ({ token: '', tokenType: 'Bearer', usuario: { username: '', roles: [] } }),
-  register: async () => ({ token: '', tokenType: 'Bearer', usuario: { username: '', roles: [] } }),
+  login: async () => ({ token: '', tokenType: 'Bearer', username: '', roles: [] }),
+  register: async () => ({ token: '', tokenType: 'Bearer', username: '', roles: [] }),
   logout: () => {},
   isModalOpen: false,
   modalTab: 'login',
