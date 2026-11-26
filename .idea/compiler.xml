@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="TypeScriptCompiler">
-    <option name="typeScriptCompilerParams" value="C:\Users\Equipo\Downloads\Continuaci-n-del-proyecto-adaptado-a-React\build-my-pc\node_modules\typescript\lib\tsserver.js" />
+    <option name="typeScriptServiceDirectory" value="$PROJECT_DIR$/build-my-pc/node_modules/typescript" />
+    <option name="versionType" value="SERVICE_DIRECTORY" />
   </component>
 </project>
