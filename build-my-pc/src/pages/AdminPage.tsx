@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
+// El servicio está implementado en JavaScript y todavía no publica sus tipos.
+// @ts-expect-error - obtenerUsuarios se tipará como UsuarioItem[] al cargar el archivo JS.
 import { obtenerUsuarios } from '../services/usuarioService';
 
 interface UsuarioItem {
