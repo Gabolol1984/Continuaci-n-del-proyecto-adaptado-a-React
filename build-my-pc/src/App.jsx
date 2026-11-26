@@ -13,6 +13,7 @@ import DetalleProducto from './pages/DetalleProducto';
 import Mantencion from './pages/Mantencion';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import AdminPage from './pages/AdminPage';
 
 
 export default function App() {
@@ -160,7 +161,9 @@ export default function App() {
             <RegisterPage setPaginaActual={setPaginaActual} />
         )}
 
-        {paginaActual === 'admin' && <AdminUsuarios />}
+        {paginaActual === 'admin' && (
+            <AdminPage setPaginaActual={setPaginaActual} />
+        )}
 
         <Footer setPaginaActual={setPaginaActual} />
 
