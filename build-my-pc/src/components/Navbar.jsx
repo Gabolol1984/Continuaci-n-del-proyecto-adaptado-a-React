@@ -1,16 +1,17 @@
 
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
+import { getRolesFromUser } from '../services/auth.storage';
 
 export default function Navbar({ paginaActual, setPaginaActual }) {
     const { user, logout, openModal } = useAuth();
 
-    // Obtener los roles de forma segura
-    const roles = Array.isArray(user?.roles) ? user.roles : [];
+    // Obtener los roles de forma segura (soporta JSON plano, anidado o claims del JWT)
+    const roles = getRolesFromUser(user);
     const esAdmin = roles.includes('ROLE_ADMIN');
 
     // Obtener el nombre de usuario
-    const nombreUsuario = user?.username ?? 'Usuario';
+    const nombreUsuario = user?.username ?? user?.usuario?.username ?? 'Usuario';
 
     const enlaces = [
         { id: 'inicio', label: 'Inicio' },

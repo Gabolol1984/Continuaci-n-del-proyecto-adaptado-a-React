@@ -58,3 +58,22 @@ export function clearSession(): void {
 export function isAuthenticated(): boolean {
   return !!getToken();
 }
+
+export function getRolesFromUser(user: any): string[] {
+  if (!user) return [];
+  if (Array.isArray(user.roles)) return user.roles;
+  if (Array.isArray(user.usuario?.roles)) return user.usuario.roles;
+
+  const token = user.token;
+  if (typeof token === 'string' && token.includes('.')) {
+    try {
+      const payload = token.split('.')[1];
+      const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+      const claims = JSON.parse(atob(base64));
+      if (Array.isArray(claims.roles)) return claims.roles;
+    } catch {
+      return [];
+    }
+  }
+  return [];
+}

@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 // El servicio está implementado en JavaScript y todavía no publica sus tipos.
 // @ts-expect-error - obtenerUsuarios se tipará como UsuarioItem[] al cargar el archivo JS.
 import { obtenerUsuarios } from '../services/usuarioService';
+import { getRolesFromUser } from '../services/auth.storage';
 
 interface UsuarioItem {
   usuarioId: number;
@@ -15,8 +16,8 @@ interface AdminPageProps {
 }
 
 export const AdminPage: React.FC<AdminPageProps> = ({ setPaginaActual }) => {
-  const { user } = useAuth();
-  const roles = Array.isArray(user?.roles) ? user.roles : [];
+  const { user, openModal } = useAuth();
+  const roles = getRolesFromUser(user);
   const esAdmin = roles.includes('ROLE_ADMIN');
 
   const [usuarios, setUsuarios] = useState<UsuarioItem[]>([]);
@@ -65,14 +66,23 @@ export const AdminPage: React.FC<AdminPageProps> = ({ setPaginaActual }) => {
           }}
         >
           <h2 style={{ color: 'var(--error, #ff5c5c)', marginBottom: '0.75rem' }}>
-            Acceso denegado
+            {user ? 'Acceso denegado' : 'Sesión requerida'}
           </h2>
           <p style={{ color: 'var(--texto-suave, #94a3b8)', marginBottom: '1.5rem' }}>
-            Esta sección es exclusiva para usuarios con rol <strong>ROLE_ADMIN</strong>.
+            {user
+              ? `Esta sección es exclusiva para usuarios con rol ROLE_ADMIN. Roles actuales: ${roles.length ? roles.join(', ') : 'ninguno'}.`
+              : 'Debes iniciar sesión con una cuenta con rol ROLE_ADMIN para acceder al panel.'}
           </p>
-          <button type="button" onClick={volverInicio} className="boton-primario">
-            Volver al inicio
-          </button>
+          <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+            {!user && (
+              <button type="button" onClick={() => openModal('login')} className="boton-primario">
+                Iniciar sesión
+              </button>
+            )}
+            <button type="button" onClick={volverInicio} className="boton-primario">
+              Volver al inicio
+            </button>
+          </div>
         </div>
       </main>
     );
